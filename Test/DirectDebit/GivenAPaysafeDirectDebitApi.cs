@@ -23,18 +23,19 @@ namespace Tests.DirectDebit
         private DirectDebitService _eftDirectDebitService;
         private Purchases _eftPurchase;
 
-        private StandaloneCredits _standaloneCredit;
+        private StandaloneCredits _eftStandaloneCredit;
+        private StandaloneCredits _achStandaloneCredit;
 
         [SetUp]
         public void Init()
         {
             _achDirectDebitService = SampleFactory.CreateSampleAchDirectDebitService();
             _achPurchase = SampleFactory.CreateSampleAchPurchase();
+            _achStandaloneCredit = SampleFactory.CreateSampleAchStandaloneCredits();
 
             _eftDirectDebitService = SampleFactory.CreateSampleEftDirectDebitService();
             _eftPurchase = SampleFactory.CreateSampleEftPurchase();
-
-            _standaloneCredit = SampleFactory.CreateSampleEftStandaloneCredits();
+            _eftStandaloneCredit = SampleFactory.CreateSampleEftStandaloneCredits();
         }
 
         /*
@@ -91,7 +92,7 @@ namespace Tests.DirectDebit
         }
 
         [Test]
-        [Ignore("Currently causing internal server error")]
+        //[Ignore("Currently causing internal server error")]
         public void When_I_process_an_ach_purchase_Then_it_should_return_a_valid_response_sync()
         {
             Purchases response = _achDirectDebitService.Submit(_achPurchase);
@@ -100,7 +101,7 @@ namespace Tests.DirectDebit
         }
 
         [Test]
-        [Ignore("Currently causing internal server error")]
+        //[Ignore("Currently causing internal server error")]
         public async Task When_I_process_an_ach_purchase_Then_it_should_return_a_valid_response_async()
         {
             Purchases response = await _achDirectDebitService.SubmitAsync(_achPurchase);
@@ -159,7 +160,7 @@ namespace Tests.DirectDebit
         }
 
         [Test]
-        [Ignore("Currently causing internal server error")]
+        //[Ignore("Currently causing internal server error")]
         public void When_I_process_an_ach_purchase_using_a_token_Then_it_should_return_a_valid_response_sync()
         {
             var vaultService = SampleFactory.CreateSampleCustomerVaultService();
@@ -170,13 +171,14 @@ namespace Tests.DirectDebit
             var address = SampleFactory.CreateSampleAddress(profile);
             address = vaultService.Create(address);
 
-            var account = SampleFactory.CreatSampleEftBankAccount(profile, address);
+            var account = SampleFactory.CreatSampleAchBankAccount(profile, address);
             account = vaultService.Create(account);
 
             Purchases response = _achDirectDebitService.Submit(Purchases.Builder()
                                                                     .MerchantRefNum(System.Guid.NewGuid().ToString())
                                                                     .Amount(10038)
                                                                     .Ach()
+                                                                        .PayMethod("WEB")
                                                                         .PaymentToken(account.PaymentToken())
                                                                         .Done()
                                                                     .Build());
@@ -185,7 +187,7 @@ namespace Tests.DirectDebit
         }
 
         [Test]
-        [Ignore("Currently causing internal server error")]
+        //[Ignore("Currently causing internal server error")]
         public async Task When_I_process_an_ach_purchase_using_a_token_Then_it_should_return_a_valid_response_async()
         {
             var vaultService = SampleFactory.CreateSampleCustomerVaultService();
@@ -196,13 +198,14 @@ namespace Tests.DirectDebit
             var address = SampleFactory.CreateSampleAddress(profile);
             address = await vaultService.CreateAsync(address);
 
-            var account = SampleFactory.CreatSampleEftBankAccount(profile, address);
+            var account = SampleFactory.CreatSampleAchBankAccount(profile, address);
             account = await vaultService.CreateAsync(account);
 
             Purchases response = await _achDirectDebitService.SubmitAsync(Purchases.Builder()
                                                                                .MerchantRefNum(System.Guid.NewGuid().ToString())
                                                                                .Amount(10038)
                                                                                .Ach()
+                                                                                   .PayMethod("WEB")
                                                                                    .PaymentToken(account.PaymentToken())
                                                                                    .Done()
                                                                                .Build());
@@ -239,7 +242,7 @@ namespace Tests.DirectDebit
         }
 
         [Test]
-        [Ignore("Currently causing internal server error")]
+        //[Ignore("Currently causing internal server error")]
         public void When_I_cancel_an_ach_purchase_Then_it_should_return_a_valid_response_sync()
         {
             _achPurchase = _achDirectDebitService.Submit(_achPurchase);
@@ -253,7 +256,7 @@ namespace Tests.DirectDebit
         }
 
         [Test]
-        [Ignore("Currently causing internal server error")]
+        //[Ignore("Currently causing internal server error")]
         public async Task When_I_cancel_an_ach_purchase_Then_it_should_return_a_valid_response_async()
         {
             _achPurchase = await _achDirectDebitService.SubmitAsync(_achPurchase);
@@ -293,7 +296,7 @@ namespace Tests.DirectDebit
         }
 
         [Test]
-        [Ignore("Currently causing internal server error")]
+        //[Ignore("Currently causing internal server error")]
         public void When_I_lookup_an_ach_purchase_using_an_id_Then_it_should_return_a_valid_ach_purchase_sync()
         {
            _achPurchase = _achDirectDebitService.Submit(_achPurchase);
@@ -306,7 +309,7 @@ namespace Tests.DirectDebit
         }
 
         [Test]
-        [Ignore("Currently causing internal server error")]
+        //[Ignore("Currently causing internal server error")]
         public async Task When_I_lookup_an_ach_purchase_using_an_id_Then_it_should_return_a_valid_ach_purchase_async()
         {
             _achPurchase = await _achDirectDebitService.SubmitAsync(_achPurchase);
@@ -350,8 +353,8 @@ namespace Tests.DirectDebit
         }
 
         [Test]
-        [Ignore("Currently causing internal server error")]
-        public void When_I_lookup_an_ach_purchase_using_a_mercahnt_refnum_Then_it_should_return_a_valid_ach_purchase_sync()
+        //[Ignore("Currently causing internal server error")]
+        public void When_I_lookup_an_ach_purchase_using_a_merchant_refnum_Then_it_should_return_a_valid_ach_purchase_sync()
         {
             _achPurchase = _achDirectDebitService.Submit(_achPurchase);
 
@@ -365,7 +368,7 @@ namespace Tests.DirectDebit
         }
 
         [Test]
-        [Ignore("Currently causing internal server error")]
+        //[Ignore("Currently causing internal server error")]
         public async Task When_I_lookup_an_ach_purchase_using_a_mercahnt_refnum_Then_it_should_return_a_valid_ach_purchase_async()
         {
             _achPurchase = await _achDirectDebitService.SubmitAsync(_achPurchase);
@@ -388,7 +391,7 @@ namespace Tests.DirectDebit
         [Test]
         public void When_I_process_an_eft_standalone_credit_Then_it_should_return_a_valid_response_sync()
         {
-            var response = _eftDirectDebitService.Submit(_standaloneCredit);
+            var response = _eftDirectDebitService.Submit(_eftStandaloneCredit);
 
             Assert.That(response.Status(), Is.EqualTo("COMPLETED"));
         }
@@ -396,25 +399,25 @@ namespace Tests.DirectDebit
         [Test]
         public async Task When_I_process_an_eft_standalone_credit_Then_it_should_return_a_valid_response_async()
         {
-            var response = await _eftDirectDebitService.SubmitAsync(_standaloneCredit);
+            var response = await _eftDirectDebitService.SubmitAsync(_eftStandaloneCredit);
 
             Assert.That(response.Status(), Is.EqualTo("COMPLETED"));
         }
 
         [Test]
-        [Ignore("Currently causing internal server error")]
+        //[Ignore("Currently causing internal server error")]
         public void When_I_process_an_ach_standalone_credit_Then_it_should_return_a_valid_response_sync()
         {
-            var response = _achDirectDebitService.Submit(_standaloneCredit);
+            var response = _achDirectDebitService.Submit(_achStandaloneCredit);
 
             Assert.That(response.Status(), Is.EqualTo("COMPLETED"));
         }
 
         [Test]
-        [Ignore("Currently causing internal server error")]
+        //[Ignore("Currently causing internal server error")]
         public async Task When_I_process_an_ach_standalone_credit_Then_it_should_return_a_valid_response_async()
         {
-            var response = await _achDirectDebitService.SubmitAsync(_standaloneCredit);
+            var response = await _achDirectDebitService.SubmitAsync(_achStandaloneCredit);
 
             Assert.That(response.Status(), Is.EqualTo("COMPLETED"));
         }
@@ -470,7 +473,7 @@ namespace Tests.DirectDebit
         }
 
         [Test]
-        [Ignore("Currently causing internal server error")]
+        //[Ignore("Currently causing internal server error")]
         public void When_I_process_an_ach_standalone_using_a_payment_token_credit_Then_it_should_return_a_valid_response_sync()
         {
             var vaultService = SampleFactory.CreateSampleCustomerVaultService();
@@ -497,7 +500,7 @@ namespace Tests.DirectDebit
         }
 
         [Test]
-        [Ignore("Currently causing internal server error")]
+        //[Ignore("Currently causing internal server error")]
         public async Task When_I_process_an_ach_standalone_using_a_payment_token_credit_Then_it_should_return_a_valid_response_async()
         {
             var vaultService = SampleFactory.CreateSampleCustomerVaultService();
@@ -529,11 +532,11 @@ namespace Tests.DirectDebit
         [Test]
         public void When_I_cancel_an_eft_standalone_credit_Then_it_should_return_a_valid_response_sync()
         {
-            _standaloneCredit = _eftDirectDebitService.Submit(_standaloneCredit);
+            _eftStandaloneCredit = _eftDirectDebitService.Submit(_eftStandaloneCredit);
 
             var response = _eftDirectDebitService.Cancel(StandaloneCredits.Builder()
                                                            .Status("CANCELLED")
-                                                           .Id(_standaloneCredit.Id())
+                                                           .Id(_eftStandaloneCredit.Id())
                                                            .Build());
 
             Assert.That(response.Status(), Is.EqualTo("CANCELLED"));
@@ -542,39 +545,39 @@ namespace Tests.DirectDebit
         [Test]
         public async Task When_I_cancel_an_eft_standalone_credit_Then_it_should_return_a_valid_response_async()
         {
-            _standaloneCredit = await _eftDirectDebitService.SubmitAsync(_standaloneCredit);
+            _eftStandaloneCredit = await _eftDirectDebitService.SubmitAsync(_eftStandaloneCredit);
 
             var response = await _eftDirectDebitService.CancelAsync(StandaloneCredits.Builder()
                                                                       .Status("CANCELLED")
-                                                                      .Id(_standaloneCredit.Id())
+                                                                      .Id(_eftStandaloneCredit.Id())
                                                                       .Build());
 
             Assert.That(response.Status(), Is.EqualTo("CANCELLED"));
         }
 
         [Test]
-        [Ignore("Currently causing internal server error")]
+        //[Ignore("Currently causing internal server error")]
         public void When_I_cancel_an_ach_standalone_credit_Then_it_should_return_a_valid_response_sync()
         {
-            _standaloneCredit = _achDirectDebitService.Submit(_standaloneCredit);
+            _achStandaloneCredit = _achDirectDebitService.Submit(_achStandaloneCredit);
 
             var response = _achDirectDebitService.Cancel(StandaloneCredits.Builder()
                 .Status("CANCELLED")
-                .Id(_standaloneCredit.Id())
+                .Id(_achStandaloneCredit.Id())
                 .Build());
 
             Assert.That(response.Status(), Is.EqualTo("CANCELLED"));
         }
 
         [Test]
-        [Ignore("Currently causing internal server error")]
+        //[Ignore("Currently causing internal server error")]
         public async Task When_I_cancel_an_ach_standalone_credit_Then_it_should_return_a_valid_response_async()
         {
-            _standaloneCredit = await _achDirectDebitService.SubmitAsync(_standaloneCredit);
+            _achStandaloneCredit = await _achDirectDebitService.SubmitAsync(_achStandaloneCredit);
 
             var response = await _achDirectDebitService.CancelAsync(StandaloneCredits.Builder()
                 .Status("CANCELLED")
-                .Id(_standaloneCredit.Id())
+                .Id(_achStandaloneCredit.Id())
                 .Build());
 
             Assert.That(response.Status(), Is.EqualTo("CANCELLED"));
@@ -585,115 +588,115 @@ namespace Tests.DirectDebit
         [Test]
         public void When_I_lookup_an_eft_standalone_credit_using_an_id_Then_it_should_return_a_valid_eft_standalone_credit_sync()
         {
-            _standaloneCredit = _eftDirectDebitService.Submit(_standaloneCredit);
+            _eftStandaloneCredit = _eftDirectDebitService.Submit(_eftStandaloneCredit);
 
             var returnedStandaloneCredit = _eftDirectDebitService.Get(StandaloneCredits.Builder()
-                                                  .Id(_standaloneCredit.Id())
+                                                  .Id(_eftStandaloneCredit.Id())
                                                   .Build());
 
-            Assert.That(StandaloneCrditsAreEquivalent(_standaloneCredit, returnedStandaloneCredit));
+            Assert.That(StandaloneCrditsAreEquivalent(_eftStandaloneCredit, returnedStandaloneCredit));
         }
 
         [Test]
         public async Task When_I_lookup_an_eft_standalone_credit_using_an_id_Then_it_should_return_a_valid_eft_standalone_credit_async()
         {
-            _standaloneCredit = await _eftDirectDebitService.SubmitAsync(_standaloneCredit);
+            _eftStandaloneCredit = await _eftDirectDebitService.SubmitAsync(_eftStandaloneCredit);
 
             var returnedStandaloneCredit = await _eftDirectDebitService.GetAsync(StandaloneCredits.Builder()
-                                                        .Id(_standaloneCredit.Id())
+                                                        .Id(_eftStandaloneCredit.Id())
                                                         .Build());
 
-            Assert.That(StandaloneCrditsAreEquivalent(_standaloneCredit, returnedStandaloneCredit));
+            Assert.That(StandaloneCrditsAreEquivalent(_eftStandaloneCredit, returnedStandaloneCredit));
         }
 
         [Test]
-        [Ignore("Currently causing internal server error")]
+        //[Ignore("Currently causing internal server error")]
         public void When_I_lookup_an_ach_standalone_credit_using_an_id_Then_it_should_return_a_valid_ach_standalone_credit_sync()
         {
-            _standaloneCredit = _achDirectDebitService.Submit(_standaloneCredit);
+            _achStandaloneCredit = _achDirectDebitService.Submit(_achStandaloneCredit);
 
             var returnedStandaloneCredit = _achDirectDebitService.Get(StandaloneCredits.Builder()
-                                                  .Id(_standaloneCredit.Id())
+                                                  .Id(_achStandaloneCredit.Id())
                                                   .Build());
 
-            Assert.That(StandaloneCrditsAreEquivalent(_standaloneCredit, returnedStandaloneCredit));
+            Assert.That(StandaloneCrditsAreEquivalent(_achStandaloneCredit, returnedStandaloneCredit));
         }
 
         [Test]
-        [Ignore("Currently causing internal server error")]
+        //[Ignore("Currently causing internal server error")]
         public async Task When_I_lookup_an_ach_standalone_using_an_id_credit_Then_it_should_return_a_valid_ach_standalone_credit_async()
         {
-            _standaloneCredit = await _achDirectDebitService.SubmitAsync(_standaloneCredit);
+            _achStandaloneCredit = await _achDirectDebitService.SubmitAsync(_achStandaloneCredit);
 
             var returnedStandaloneCredit = await _achDirectDebitService.GetAsync(StandaloneCredits.Builder()
-                                                        .Id(_standaloneCredit.Id())
+                                                        .Id(_achStandaloneCredit.Id())
                                                         .Build());
 
-            Assert.That(StandaloneCrditsAreEquivalent(_standaloneCredit, returnedStandaloneCredit));
+            Assert.That(StandaloneCrditsAreEquivalent(_achStandaloneCredit, returnedStandaloneCredit));
         }
 
         // Fail: Sometimes returns empty results
         [Test]
         public void When_I_lookup_an_eft_standalone_credit_using_a_merchant_refnum_Then_it_should_return_a_valid_eft_standalone_credit_sync()
         {
-            _standaloneCredit = _eftDirectDebitService.Submit(_standaloneCredit);
+            _eftStandaloneCredit = _eftDirectDebitService.Submit(_eftStandaloneCredit);
 
             var returnedStandaloneCredit = _eftDirectDebitService.GetStandaloneCredits(StandaloneCredits.Builder()
-                                                                                         .MerchantRefNum(_standaloneCredit.MerchantRefNum())
+                                                                                         .MerchantRefNum(_eftStandaloneCredit.MerchantRefNum())
                                                                                          .Build());
 
             var result = returnedStandaloneCredit.GetResults();
 
             Assert.That(result.Count, Is.EqualTo(1));
-            Assert.That(StandaloneCrditsAreEquivalent(_standaloneCredit, result.First()));
+            Assert.That(StandaloneCrditsAreEquivalent(_eftStandaloneCredit, result.First()));
         }
 
         // Fail: Sometimes returns empty results
         [Test]
         public async Task When_I_lookup_an_eft_standalone_credit_using_a_merchant_refnum_Then_it_should_return_a_valid_eft_standalone_credit_async()
         {
-            _standaloneCredit = await _eftDirectDebitService.SubmitAsync(_standaloneCredit);
+            _eftStandaloneCredit = await _eftDirectDebitService.SubmitAsync(_eftStandaloneCredit);
 
             var returnedStandaloneCredit = await _eftDirectDebitService.GetStandaloneCreditsAsync(StandaloneCredits.Builder()
-                .MerchantRefNum(_standaloneCredit.MerchantRefNum())
+                .MerchantRefNum(_eftStandaloneCredit.MerchantRefNum())
                 .Build());
 
             var result = returnedStandaloneCredit.GetResults();
 
             Assert.That(result.Count, Is.EqualTo(1));
-            Assert.That(StandaloneCrditsAreEquivalent(_standaloneCredit, result.First()));
+            Assert.That(StandaloneCrditsAreEquivalent(_eftStandaloneCredit, result.First()));
         }
 
         [Test]
-        [Ignore("Currently causing internal server error")]
+        //[Ignore("Currently causing internal server error")]
         public void When_I_lookup_an_ach_standalone_credit_using_a_merchant_refnum_Then_it_should_return_a_valid_ach_standalone_credit_sync()
         {
-            _standaloneCredit = _achDirectDebitService.Submit(_standaloneCredit);
+            _achStandaloneCredit = _achDirectDebitService.Submit(_achStandaloneCredit);
 
             var returnedStandaloneCredit = _achDirectDebitService.GetStandaloneCredits(StandaloneCredits.Builder()
-                                                                                         .MerchantRefNum(_standaloneCredit.MerchantRefNum())
+                                                                                         .MerchantRefNum(_achStandaloneCredit.MerchantRefNum())
                                                                                          .Build());
 
             var result = returnedStandaloneCredit.GetResults();
 
             Assert.That(result.Count, Is.EqualTo(1));
-            Assert.That(StandaloneCrditsAreEquivalent(_standaloneCredit, result.First()));
+            Assert.That(StandaloneCrditsAreEquivalent(_achStandaloneCredit, result.First()));
         }
 
         [Test]
-        [Ignore("Currently causing internal server error")]
+        //[Ignore("Currently causing internal server error")]
         public async Task When_I_lookup_an_ach_standalone_using_a_merchant_refnum_credit_Then_it_should_return_a_valid_ach_standalone_credit_async()
         {
-            _standaloneCredit = await _achDirectDebitService.SubmitAsync(_standaloneCredit);
+            _achStandaloneCredit = await _achDirectDebitService.SubmitAsync(_achStandaloneCredit);
 
             var returnedStandaloneCredit = await _achDirectDebitService.GetStandaloneCreditsAsync(StandaloneCredits.Builder()
-                                                                                                    .MerchantRefNum(_standaloneCredit.MerchantRefNum())
+                                                                                                    .MerchantRefNum(_achStandaloneCredit.MerchantRefNum())
                                                                                                     .Build());
 
             var result = returnedStandaloneCredit.GetResults();
 
             Assert.That(result.Count, Is.EqualTo(1));
-            Assert.That(StandaloneCrditsAreEquivalent(_standaloneCredit, result.First()));
+            Assert.That(StandaloneCrditsAreEquivalent(_achStandaloneCredit, result.First()));
         }
 
         /*
